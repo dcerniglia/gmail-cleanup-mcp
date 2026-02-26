@@ -79,10 +79,12 @@ async function loadCredentials(): Promise<void> {
     process.exit(1);
   }
 
+  const AUTH_PORT = parseInt(process.env.GMAIL_AUTH_PORT || "3000", 10);
+
   const redirectUri =
     process.argv[2] === "auth" && process.argv[3]
       ? process.argv[3]
-      : "http://localhost:3000/oauth2callback";
+      : `http://localhost:${AUTH_PORT}/oauth2callback`;
 
   oauth2Client = new OAuth2Client(
     keys.client_id,
@@ -99,8 +101,9 @@ async function loadCredentials(): Promise<void> {
 }
 
 async function authenticate(): Promise<void> {
+  const AUTH_PORT = parseInt(process.env.GMAIL_AUTH_PORT || "3000", 10);
   const server = http.createServer();
-  server.listen(3000);
+  server.listen(AUTH_PORT);
 
   return new Promise<void>((resolve, reject) => {
     const authUrl = oauth2Client.generateAuthUrl({
